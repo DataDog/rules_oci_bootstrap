@@ -3,6 +3,18 @@
 These rules implement repository rules to pull blobs from an oci registry,
 including authentication from docker credential helpers.
 
+Importing this repository:
+```
+echo """
+git_repository(
+    name = \"rules_dd_bootstrap\",
+    remote = \"https://github.com/DataDog/rules_dd_bootstrap.git\",
+    commit = \"$(git ls-remote ssh://git@github.com/DataDog/rules_dd_bootstrap | head -1 | cut -f 1)\",
+)
+""" | pbcopy
+```
+
+
 Example blob pull:
 ```
 load("@rules_dd_bootstrap//:defs.bzl", "dd_oci_blob_pull")
