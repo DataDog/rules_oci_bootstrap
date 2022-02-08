@@ -1,0 +1,4 @@
+filegroup(
+    name = "test",
+    srcs = ["@test-blob//:blob"],
+)

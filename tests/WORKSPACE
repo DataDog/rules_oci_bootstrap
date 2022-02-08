@@ -1,0 +1,14 @@
+workspace(name = "test")
+
+local_repository(
+    name = "rules_dd_bootstrap",
+    path = "../",
+)
+
+load("@rules_dd_bootstrap//:defs.bzl", "dd_oci_blob_pull")
+dd_oci_blob_pull(
+    name = "test-blob",
+    registry = "registry.ddbuild.io",
+    repository = "cnab-tools/cmd/judgement-invocation/bundle",
+    digest = "sha256:e75309da83eda9d0efbb168a7d46e8caff8d6a850fd19e28f22774869bb58bc0"
+)
