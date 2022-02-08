@@ -14,5 +14,7 @@ dd_oci_blob_pull(
 )
 ```
 
-The registry can be overriden by setting `DD_REGISTRY_HOST`, which will force
-a fetch.
+The registry can be overriden by setting `DD_REGISTRY_HOST`, which will override
+the registry parameter. This should be done by the the `bzl` wrapper when the
+user is in a different AppGate partition, when not provided the `registry`
+attribute will serve as the default.
