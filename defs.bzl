@@ -1,3 +1,8 @@
+DEBUG = False
+def debug(*args):
+    if DEBUG:
+        print(*args)
+
 def _execute_script(rctx, content):
     file = rctx.path("script.sh")
     rctx.file(file, content = content, executable = True)
@@ -11,6 +16,8 @@ def _read_cred_helpers(rctx):
     if docker_config_env != None:
         raw_config_path_base = docker_config_env + "/config.json"
 
+    debug("reading docker config from: ", raw_config_path)
+
     config_path = rctx.path(raw_config_path)
     if not config_path.exists:
         return {}
@@ -23,6 +30,8 @@ def _read_cred_helpers(rctx):
 
 def _get_registry_auth(rctx, registry):
     helpers = _read_cred_helpers(rctx)
+
+    debug("found helpers: ", helpers)
 
     helper = helpers.get(registry)
     if helper == None:
@@ -60,7 +69,7 @@ def _dd_oci_blob_pull_impl(rctx):
             },
         }
 
-    print(blob_url, auths)
+    debug("Pulling from: ", blob_url, ", auth token: ", auths)
     algo, sha256digest = rctx.attr.digest.split(":")
     rctx.download(
         url = blob_url,
