@@ -5,8 +5,8 @@ local_repository(
     path = "../",
 )
 
-load("@rules_oci_bootstrap//:defs.bzl", "dd_oci_blob_pull")
-dd_oci_blob_pull(
+load("@rules_oci_bootstrap//:defs.bzl", "oci_blob_pull")
+oci_blob_pull(
     name = "test-blob",
     registry = "registry.ddbuild.io",
     repository = "cnab-tools/cmd/judgement-invocation/bundle",

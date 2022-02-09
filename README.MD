@@ -22,7 +22,7 @@ apis so that blobs pulled by these rules can be cached by Bazel.
 In addition to issues mentioned above, we have multiple network
 partitions where the registry defined in the `WORKSPACE` file is not always available.
 In this case, a script that wraps the `bazel` command can override the registry
-host via the `DD_REGISTRY_HOST` environment variable.
+host via the `OCI_REGISTRY_HOST` environment variable.
 
 ## Setup
 
@@ -57,16 +57,16 @@ git_repository(
 
 Example blob pull:
 ```
-load("@rules_oci_bootstrap//:defs.bzl", "dd_oci_blob_pull")
-dd_oci_blob_pull(
+load("@rules_oci_bootstrap//:defs.bzl", "oci_blob_pull")
+oci_blob_pull(
     name = "test-blob",
-    registry = "registry.ddbuild.io",
-    repository = "cnab-tools/cmd/judgement-invocation/bundle",
-    digest = "sha256:e75309da83eda9d0efbb168a7d46e8caff8d6a850fd19e28f22774869bb58bc0"
+    registry = "registry.example.com",
+    repository = "my/repository",
+    digest = "sha256:abcd"
 )
 ```
 
-The registry can be overriden by setting `DD_REGISTRY_HOST`, which will override
+The registry can be overriden by setting `OCI_REGISTRY_HOST`, which will override
 the registry parameter. This should be done by a script that wraps `bazel` when the
 user is in a different network partition, when not provided the `registry`
 attribute will serve as the default.

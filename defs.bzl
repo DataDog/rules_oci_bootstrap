@@ -48,7 +48,7 @@ def _get_registry_auth(rctx, registry):
 
 def _dd_oci_blob_pull_impl(rctx):
     registry = rctx.attr.registry
-    registry_env = rctx.os.environ.get("DD_REGISTRY_HOST")
+    registry_env = rctx.os.environ.get("OCI_REGISTRY_HOST")
     if registry_env != None:
         registry = registry_env
 
@@ -83,8 +83,8 @@ def _dd_oci_blob_pull_impl(rctx):
 
     rctx.file("BUILD.bazel", rctx.attr.build_file_content)
 
-dd_oci_blob_pull = repository_rule(
-    implementation = _dd_oci_blob_pull_impl,
+oci_blob_pull = repository_rule(
+    implementation = _oci_blob_pull_impl,
     attrs = {
         "registry": attr.string(),
         "repository": attr.string(),
@@ -100,7 +100,7 @@ dd_oci_blob_pull = repository_rule(
         )
     },
     environ = [
-        "DD_REGISTRY_HOST",
+        "OCI_REGISTRY_HOST",
         "HOME",
         "DOCKER_CONFIG",
     ],
