@@ -68,7 +68,8 @@ oci_blob_pull(
 )
 ```
 
-To pull a `.tar.gz` (or any other archive), you can do something like this:
+To pull a `.tar.gz` (or any other archive), you can do something like this,
+however you may want to provide your own `BUILD` file via `build_file_content`:
 ```
 load("@rules_oci_bootstrap//:defs.bzl", "oci_blob_pull")
 
