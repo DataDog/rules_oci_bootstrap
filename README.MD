@@ -55,18 +55,34 @@ git_repository(
 
 ## Usage
 
-Example blob pull:
+To pull a single file, which can be referenced at `@test_blob//:blob`, you can
+add something like the following to your `WORKSPACE`:
 ```
 load("@rules_oci_bootstrap//:defs.bzl", "oci_blob_pull")
+
 oci_blob_pull(
-    name = "test-blob",
+    name = "test_blob",
     registry = "registry.example.com",
     repository = "my/repository",
-    digest = "sha256:abcd"
+    digest = "sha256:abcd...",
 )
 ```
 
-The registry can be overriden by setting `OCI_REGISTRY_HOST`, which will override
+To pull a `.tar.gz` (or any other archive), you can do something like this:
+```
+load("@rules_oci_bootstrap//:defs.bzl", "oci_blob_pull")
+
+oci_blob_pull(
+    name = "test_blob",
+    registry = "registry.example.com",
+    repository = "my/repository",
+    digest = "sha256:abcd...",
+    extract = True,
+    type = "tar.gz",
+)
+```
+
+NOTE: The registry can be overriden by setting `OCI_REGISTRY_HOST`, which will override
 the registry parameter. This should be done by a script that wraps `bazel` when the
 user is in a different network partition, when not provided the `registry`
 attribute will serve as the default.

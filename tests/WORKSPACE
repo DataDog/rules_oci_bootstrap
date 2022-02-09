@@ -6,9 +6,24 @@ local_repository(
 )
 
 load("@rules_oci_bootstrap//:defs.bzl", "oci_blob_pull")
+
+# Dummy data comes from crawling `crane manifest mirror.gcr.io/registry:latest`
+# for until I got to the first layer.
+
+# Test out by running `bzl fetch @REPO//...` then `cat $(bazel info output_base)/external/REPO`
+
 oci_blob_pull(
     name = "test-blob",
-    registry = "registry.ddbuild.io",
-    repository = "cnab-tools/cmd/judgement-invocation/bundle",
-    digest = "sha256:e75309da83eda9d0efbb168a7d46e8caff8d6a850fd19e28f22774869bb58bc0"
+    digest = "sha256:91dceb018e81eefd8f12f94fce01ae9ad1cbc0c941e38ff897642f97b0954e1c",
+    registry = "mirror.gcr.io",
+    repository = "library/registry",
+)
+
+oci_blob_pull(
+    name = "test-archive",
+    digest = "sha256:91dceb018e81eefd8f12f94fce01ae9ad1cbc0c941e38ff897642f97b0954e1c",
+    extract = True,
+    registry = "mirror.gcr.io",
+    repository = "library/registry",
+    type = "tar.gz",
 )

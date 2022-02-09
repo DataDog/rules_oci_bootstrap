@@ -4,6 +4,7 @@
 # This product includes software developed at Datadog (https://www.datadoghq.com/). Copyright 2020 Datadog, Inc.
 
 DEBUG = False
+
 def debug(*args):
     if DEBUG:
         print(*args)
@@ -75,34 +76,69 @@ def _oci_blob_pull_impl(rctx):
         }
 
     debug("Pulling from: ", blob_url, ", auth token: ", auths)
+
     algo, sha256digest = rctx.attr.digest.split(":")
-    rctx.download(
-        url = blob_url,
-        output = rctx.path(rctx.attr.file_name),
-        sha256 = sha256digest,
-        auth = auths,
-    )
-
     if rctx.attr.extract:
-        rctx.extract(rctx.path(rctx.attr.file_name))
+        rctx.download_and_extract(
+            url = blob_url,
+            sha256 = sha256digest,
+            auth = auths,
+            type = rctx.attr.type,
+            stripPrefix = rctx.attr.strip_prefix,
+        )
+    else:
+        rctx.download(
+            url = blob_url,
+            output = rctx.path(rctx.attr.file_name),
+            sha256 = sha256digest,
+            auth = auths,
+        )
 
-    rctx.file("BUILD.bazel", rctx.attr.build_file_content)
+    if rctx.attr.build_file_content != "":
+        rctx.file("BUILD.bazel", rctx.attr.build_file_content)
 
 oci_blob_pull = repository_rule(
     implementation = _oci_blob_pull_impl,
+    doc = """
+    Pull a blob from an OCI registry using the http API. This rule also follows
+    the docker credential helper pattern to authenticate to the registry if
+    listed in the `.docker/config.json`.
+    """,
     attrs = {
-        "registry": attr.string(),
-        "repository": attr.string(),
-        "digest": attr.string(),
+        "registry": attr.string(
+            mandatory = True,
+            doc = "The registry host to pull from, can be overidden by the 'OCI_REGISTRY_HOST' env variable.",
+        ),
+        "repository": attr.string(
+            mandatory = True,
+            doc = "The OCI repository to pull from.",
+        ),
+        "digest": attr.string(
+            mandatory = True,
+            doc = "The expected algo:digest of the artifact, for example 'sha256:abcd'",
+        ),
+        # XXX: We're specifically not supporting tags as we want this to be
+        # reproducable.
         "build_file_content": attr.string(
             default = """exports_files(glob(["*"]))""",
+            doc = "The content to place in the build file at the root of the repository",
         ),
         "file_name": attr.string(
             default = "blob",
+            doc = "If not being extracted, then save the file as this name",
         ),
         "extract": attr.bool(
             default = False,
-        )
+            doc = "If true, extract the blob as if it were a archive",
+        ),
+        "type": attr.string(
+            default = "tar.gz",
+            doc = "The archive type, aka zip, tar, tar.gz, etc.",
+        ),
+        "strip_prefix": attr.string(
+            default = "",
+            doc = "A directory prefix to strip from the extracted files.",
+        ),
     },
     environ = [
         "OCI_REGISTRY_HOST",
