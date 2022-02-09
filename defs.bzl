@@ -46,7 +46,7 @@ def _get_registry_auth(rctx, registry):
 
     return struct(**json.decode(res.stdout))
 
-def _dd_oci_blob_pull_impl(rctx):
+def _oci_blob_pull_impl(rctx):
     registry = rctx.attr.registry
     registry_env = rctx.os.environ.get("OCI_REGISTRY_HOST")
     if registry_env != None:
