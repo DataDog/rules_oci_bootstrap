@@ -78,6 +78,9 @@ def _dd_oci_blob_pull_impl(rctx):
         auth = auths,
     )
 
+    if rctx.attr.extract:
+        rctx.extract(rctx.path(rctx.attr.file_name))
+
     rctx.file("BUILD.bazel", rctx.attr.build_file_content)
 
 dd_oci_blob_pull = repository_rule(
@@ -92,6 +95,9 @@ dd_oci_blob_pull = repository_rule(
         "file_name": attr.string(
             default = "blob",
         ),
+        "extract": attr.bool(
+            default = False,
+        )
     },
     environ = [
         "DD_REGISTRY_HOST",
