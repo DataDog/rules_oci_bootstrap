@@ -1,11 +1,11 @@
 workspace(name = "test")
 
 local_repository(
-    name = "rules_dd_bootstrap",
+    name = "rules_oci_bootstrap",
     path = "../",
 )
 
-load("@rules_dd_bootstrap//:defs.bzl", "dd_oci_blob_pull")
+load("@rules_oci_bootstrap//:defs.bzl", "dd_oci_blob_pull")
 dd_oci_blob_pull(
     name = "test-blob",
     registry = "registry.ddbuild.io",

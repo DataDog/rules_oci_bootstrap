@@ -1,4 +1,4 @@
-# `rules_dd_bootstrap` - Bazel rules to bootstrap from an OCI registry
+# `rules_oci_bootstrap` - Bazel rules to bootstrap from an OCI registry
 
 These rules implement repository rules to pull blobs from an oci registry,
 including authentication from docker credential helpers. Serving the primary
@@ -31,24 +31,24 @@ your `WORKSPACE` file:
 ```
 echo """
 git_repository(
-    name = \"rules_dd_bootstrap\",
-    remote = \"https://github.com/DataDog/rules_dd_bootstrap.git\",
-    commit = \"$(git ls-remote ssh://git@github.com/DataDog/rules_dd_bootstrap | head -1 | cut -f 1)\",
+    name = \"rules_oci_bootstrap\",
+    remote = \"https://github.com/DataDog/rules_oci_bootstrap.git\",
+    commit = \"$(git ls-remote ssh://git@github.com/DataDog/rules_oci_bootstrap | head -1 | cut -f 1)\",
 )
 """ | pbcopy
 ```
 
 On Linux run the following command to get the latest commit:
 ```
-git ls-remote ssh://git@github.com/DataDog/rules_dd_bootstrap | head -1 | cut -f 1
+git ls-remote ssh://git@github.com/DataDog/rules_oci_bootstrap | head -1 | cut -f 1
 ```
 
 Then substitiute `$COMMIT` in the following block, which you can paste in your
 `WORKSPACE` file:
 ```
 git_repository(
-    name = "rules_dd_bootstrap",
-    remote = "https://github.com/DataDog/rules_dd_bootstrap.git",
+    name = "rules_oci_bootstrap",
+    remote = "https://github.com/DataDog/rules_oci_bootstrap.git",
     commit = "$COMMIT",
 )
 ```
@@ -57,7 +57,7 @@ git_repository(
 
 Example blob pull:
 ```
-load("@rules_dd_bootstrap//:defs.bzl", "dd_oci_blob_pull")
+load("@rules_oci_bootstrap//:defs.bzl", "dd_oci_blob_pull")
 dd_oci_blob_pull(
     name = "test-blob",
     registry = "registry.ddbuild.io",

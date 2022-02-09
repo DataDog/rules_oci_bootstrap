@@ -1,1 +1,1 @@
-workspace(name = "rules_dd_bootstrap")
+workspace(name = "rules_oci_bootstrap")
