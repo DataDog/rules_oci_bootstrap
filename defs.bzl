@@ -55,7 +55,7 @@ def _get_registry_auth(rctx, registry):
 def _oci_blob_pull_impl(rctx):
     registry = rctx.attr.registry
     registry_env = rctx.os.environ.get("OCI_REGISTRY_HOST")
-    if registry_env != None:
+    if registry_env != None and registry_env != "":
         registry = registry_env
 
     blob_url = "https://{registry}/v2/{repository}/blobs/{digest}".format(
