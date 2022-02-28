@@ -49,6 +49,8 @@ def _get_registry_auth(rctx, registry):
     """.format(registry = registry, helper = helper)
 
     res = _execute_script(rctx, script)
+    if res.return_code > 0:
+        fail("stdout: {}, stderr: {}", res.stdout, res.stderr)
 
     return struct(**json.decode(res.stdout))
 
