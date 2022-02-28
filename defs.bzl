@@ -49,6 +49,8 @@ def _get_registry_auth(rctx, registry):
     """.format(registry = registry, helper = helper)
 
     res = _execute_script(rctx, script)
+    if res.return_code > 0:
+        fail("failed to run credential helper, stdout: {}, stderr: {}", res.stdout, res.stderr)
 
     return struct(**json.decode(res.stdout))
 
@@ -57,6 +59,8 @@ def _oci_blob_pull_impl(rctx):
     registry_env = rctx.os.environ.get("OCI_REGISTRY_HOST")
     if registry_env != None and registry_env != "":
         registry = registry_env
+    debug("using '{}' as registry, env set to '{}'".format(registry, registry_env))
+
 
     blob_url = "https://{registry}/v2/{repository}/blobs/{digest}".format(
         registry = registry,
@@ -75,7 +79,7 @@ def _oci_blob_pull_impl(rctx):
             },
         }
 
-    debug("Pulling from: ", blob_url, ", auth token: ", auths)
+    debug("pulling from: ", blob_url, ", auth token: ", auths)
 
     algo, sha256digest = rctx.attr.digest.split(":")
     if rctx.attr.extract:
