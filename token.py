@@ -107,23 +107,20 @@ def parse(value):
 
 # Registry Auth
 
-def get_auth_realm(uri):
+def get_auth_token_for_registry(registry, repository):
+    token_uri = ""
     try:
-        response = urllib.request.urlopen(uri)
+        response = urllib.request.urlopen('https://{}/v2/'.format(registry))
+        return None
     except urllib.error.URLError as e:
         if e.code != 401:
             raise e
-        realm = parse(e.headers['WWW-Authenticate'])['Bearer']['realm']
-        return realm
+        auth_headers = parse(e.headers['WWW-Authenticate'])['Bearer']
+        realm = auth_headers['realm']
+        service = auth_headers['service']
+        token_uri = "{realm}?scope=repository:{scope}:pull&service={service}".format(realm = realm, scope = repository, service = service)
 
-    return None
-
-def get_auth_token_for_registry(registry):
-    realm = get_auth_realm('https://{}/v2/'.format(registry))
-    if realm == None:
-        return None
-
-    response = urllib.request.urlopen(realm)
+    response = urllib.request.urlopen(token_uri)
     return json.loads(response.read())
 
-print(get_auth_token_for_registry(sys.argv[1]))
+print(json.dumps(get_auth_token_for_registry(sys.argv[1], sys.argv[2])))
