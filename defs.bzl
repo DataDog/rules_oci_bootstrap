@@ -61,7 +61,6 @@ def _oci_blob_pull_impl(rctx):
         registry = registry_env
     debug("using '{}' as registry, env set to '{}'".format(registry, registry_env))
 
-
     blob_url = "https://{registry}/v2/{repository}/blobs/{digest}".format(
         registry = registry,
         repository = rctx.attr.repository,
@@ -76,6 +75,15 @@ def _oci_blob_pull_impl(rctx):
                 "type": "basic",
                 "login": auth_secret.Username,
                 "password": auth_secret.Secret,
+            },
+        }
+    else:
+        result = rctx.execute([rctx.path(rctx.attr.token_handler), registry, rctx.attr.repository])
+        data = struct(**json.decode(result.stdout))
+        auths = {
+            blob_url: {
+                "type": "pattern",
+                "pattern": "Bearer {}".format(data.token),
             },
         }
 
@@ -142,6 +150,9 @@ oci_blob_pull = repository_rule(
         "strip_prefix": attr.string(
             default = "",
             doc = "A directory prefix to strip from the extracted files.",
+        ),
+        "token_handler": attr.label(
+            default = "//:token.py",
         ),
     },
     environ = [

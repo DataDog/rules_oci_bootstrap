@@ -27,3 +27,16 @@ oci_blob_pull(
     repository = "library/registry",
     type = "tar.gz",
 )
+
+oci_blob_pull(
+    name = "com_github_datadog_rules_oci",
+    digest = "sha256:cc6c59ed7da6bb376552461e06068f883bbe335359c122c15dce3c24e19cd8e2",
+    extract = True,
+    registry = "ghcr.io",
+    repository = "datadog/rules_oci/rules",
+    type = "tar.gz",
+)
+
+load("@com_github_datadog_rules_oci//oci:toolchain.bzl", "register_compiled_oci_toolchains")
+register_compiled_oci_toolchains(name = "oci_toolchain")
+
