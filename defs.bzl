@@ -3,7 +3,7 @@
 #
 # This product includes software developed at Datadog (https://www.datadoghq.com/). Copyright 2020 Datadog, Inc.
 
-DEBUG = False
+DEBUG = True
 
 def debug(*args):
     if DEBUG:
