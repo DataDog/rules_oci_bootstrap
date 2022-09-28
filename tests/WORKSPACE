@@ -35,6 +35,7 @@ oci_blob_pull(
     registry = "ghcr.io",
     repository = "datadog/rules_oci/rules",
     type = "tar.gz",
+    debug = True,
 )
 
 load("@com_github_datadog_rules_oci//oci:toolchain.bzl", "register_compiled_oci_toolchains")
