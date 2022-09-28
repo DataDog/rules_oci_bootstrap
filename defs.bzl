@@ -3,10 +3,8 @@
 #
 # This product includes software developed at Datadog (https://www.datadoghq.com/). Copyright 2020 Datadog, Inc.
 
-DEBUG = False
-
-def debug(*args):
-    if DEBUG:
+def debug(rctx, *args):
+    if rctx.attr.debug or rctx.os.environ.get("OCI_BOOTSTRAP_DEBUG") == "true":
         print(*args)
 
 def _execute_script(rctx, content):
@@ -22,7 +20,7 @@ def _read_cred_helpers(rctx):
     if docker_config_env != None:
         raw_config_path_base = docker_config_env + "/config.json"
 
-    debug("reading docker config from: ", raw_config_path)
+    debug(rctx, "reading docker config from: ", raw_config_path)
 
     config_path = rctx.path(raw_config_path)
     if not config_path.exists:
@@ -37,7 +35,7 @@ def _read_cred_helpers(rctx):
 def _get_registry_auth(rctx, registry):
     helpers = _read_cred_helpers(rctx)
 
-    debug("found helpers: ", helpers)
+    debug(rctx, "found helpers: ", helpers)
 
     helper = helpers.get(registry)
     if helper == None:
@@ -52,6 +50,8 @@ def _get_registry_auth(rctx, registry):
     if res.return_code > 0:
         fail("failed to run credential helper, stdout: {}, stderr: {}", res.stdout, res.stderr)
 
+    debug(rctx, "credential helper out: {}", res.stdout)
+
     return struct(**json.decode(res.stdout))
 
 def _oci_blob_pull_impl(rctx):
@@ -59,7 +59,7 @@ def _oci_blob_pull_impl(rctx):
     registry_env = rctx.os.environ.get("OCI_REGISTRY_HOST")
     if registry_env != None and registry_env != "":
         registry = registry_env
-    debug("using '{}' as registry, env set to '{}'".format(registry, registry_env))
+    debug(rctx, "using '{}' as registry, env set to '{}'".format(registry, registry_env))
 
     blob_url = "https://{registry}/v2/{repository}/blobs/{digest}".format(
         registry = registry,
@@ -87,7 +87,7 @@ def _oci_blob_pull_impl(rctx):
             },
         }
 
-    debug("pulling from: ", blob_url, ", auth token: ", auths)
+    debug(rctx, "pulling from: ", blob_url, ", auth token: ", auths)
 
     algo, sha256digest = rctx.attr.digest.split(":")
     if rctx.attr.extract:
@@ -154,10 +154,15 @@ oci_blob_pull = repository_rule(
         "token_handler": attr.label(
             default = "//:token.py",
         ),
+        "debug": attr.bool(
+            default = False,
+            doc = "emit debug logs",
+        ),
     },
     environ = [
         "OCI_REGISTRY_HOST",
         "HOME",
         "DOCKER_CONFIG",
+        "OCI_BOOTSTRAP_DEBUG",
     ],
 )
