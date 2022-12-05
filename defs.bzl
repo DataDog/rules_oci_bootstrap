@@ -48,9 +48,9 @@ def _get_registry_auth(rctx, registry):
 
     res = _execute_script(rctx, script)
     if res.return_code > 0:
-        fail("failed to run credential helper, stdout: {}, stderr: {}", res.stdout, res.stderr)
+        fail("failed to run credential helper, stdout: {}, stderr: {}".format(res.stdout, res.stderr))
 
-    debug(rctx, "credential helper out: {}", res.stdout)
+    debug(rctx, "credential helper out: ", res.stdout)
 
     return struct(**json.decode(res.stdout))
 
