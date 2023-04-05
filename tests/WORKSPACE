@@ -30,7 +30,7 @@ oci_blob_pull(
 
 oci_blob_pull(
     name = "com_github_datadog_rules_oci",
-    digest = "sha256:cc6c59ed7da6bb376552461e06068f883bbe335359c122c15dce3c24e19cd8e2",
+    digest = "sha256:b2090f5036ad5f8706ef5d28996f5265b1571d78a6ff4783a46e2bec2980c9db",
     extract = True,
     registry = "ghcr.io",
     repository = "datadog/rules_oci/rules",
