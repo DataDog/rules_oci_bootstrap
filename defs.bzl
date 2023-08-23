@@ -87,7 +87,7 @@ def _oci_blob_pull_impl(rctx):
             },
         }
 
-    debug(rctx, "pulling from: ", blob_url, ", auth token: ", auths)
+    debug(rctx, "pulling from: ", blob_url)
 
     algo, sha256digest = rctx.attr.digest.split(":")
     if rctx.attr.extract:
