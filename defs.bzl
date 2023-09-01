@@ -79,13 +79,15 @@ def _oci_blob_pull_impl(rctx):
         }
     else:
         result = rctx.execute([rctx.path(rctx.attr.token_handler), registry, rctx.attr.repository])
-        data = struct(**json.decode(result.stdout))
-        auths = {
-            blob_url: {
-                "type": "pattern",
-                "pattern": "Bearer {}".format(data.token),
-            },
-        }
+        data = json.decode(result.stdout)
+        token = data.get("token")
+        if token != None:
+            auths = {
+                blob_url: {
+                    "type": "pattern",
+                    "pattern": "Bearer {}".format(token),
+                },
+            }
 
     debug(rctx, "pulling from: ", blob_url)
 
