@@ -111,7 +111,7 @@ def get_auth_token_for_registry(registry, repository):
     token_uri = ""
     try:
         response = urllib.request.urlopen('https://{}/v2/'.format(registry))
-        return None
+        return json.loads(response.read())
     except urllib.error.URLError as e:
         if e.code != 401:
             raise e
