@@ -4,7 +4,10 @@
 # This product includes software developed at Datadog (https://www.datadoghq.com/). Copyright 2020 Datadog, Inc.
 
 def debug(rctx, *args):
-    if rctx.attr.debug or rctx.os.environ.get("OCI_BOOTSTRAP_DEBUG") == "true":
+    # Not clear to me how to set context, so hardcode it here.
+    # rctx.attr.debug = True
+    # rctx.os.environ.set("OCI_BOOTSTRAP_DEBUG") == "true":
+    if True or rctx.attr.debug or rctx.os.environ.get("OCI_BOOTSTRAP_DEBUG") == "true":
         print(*args)
 
 def _execute_script(rctx, content):
