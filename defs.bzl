@@ -44,7 +44,7 @@ def _get_registry_auth(rctx, registry):
     script = """
     #!/bin/bash
     echo {registry} | docker-credential-{helper} get
-    """.format(registry = registry, helper = helper)
+    """.format(registry = registry, helper = helper).strip()
 
     res = _execute_script(rctx, script)
     if res.return_code > 0:
