@@ -18,7 +18,7 @@ def _read_cred_helpers(rctx):
     raw_config_path = rctx.os.environ["HOME"] + "/.docker/config.json"
     docker_config_env = rctx.os.environ.get("DOCKER_CONFIG")
     if docker_config_env != None:
-        raw_config_path_base = docker_config_env + "/config.json"
+        raw_config_path = docker_config_env + "/config.json"
 
     debug(rctx, "reading docker config from: ", raw_config_path)
 
