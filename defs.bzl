@@ -102,7 +102,7 @@ def _oci_blob_pull_impl(rctx):
     debug(rctx, "pulling from: ", blob_url)
 
     auth = _get_auth(rctx, registry)
-    auths = {blob_url: auth} if auth or {}
+    auths = {blob_url: auth} if auth else {}
 
     _algo, sha256digest = rctx.attr.digest.split(":")
     if rctx.attr.extract:
