@@ -32,6 +32,39 @@ def _read_cred_helpers(rctx):
 
     return data["credHelpers"]
 
+def _get_auth(
+    rctx,  # type: repository_ctx
+    registry,  # type: string
+):
+    # type: (...) -> dict[string, string] | None
+
+    auth_secret = _get_registry_auth(rctx, registry)
+    if auth_secret != None:
+        if auth_secret.Username == "Bearer":
+            return {
+                "type": "pattern",
+                "pattern": "Bearer {}".format(auth_secret.Secret),
+            }
+        else:
+            return {
+                "type": "basic",
+                "login": auth_secret.Username,
+                "password": auth_secret.Secret,
+            }
+
+    token_handler_script = rctx.path(rctx.attr.token_handler)
+    result = rctx.execute([token_handler_script, registry, rctx.attr.repository])
+    data = json.decode(result.stdout)
+
+    token = data.get("token")
+    if token != None:
+        return {
+            "type": "pattern",
+            "pattern": "Bearer {}".format(token),
+        }
+
+    return None
+
 def _get_registry_auth(rctx, registry):
     helpers = _read_cred_helpers(rctx)
 
@@ -66,32 +99,12 @@ def _oci_blob_pull_impl(rctx):
         repository = rctx.attr.repository,
         digest = rctx.attr.digest,
     )
-
-    auth_secret = _get_registry_auth(rctx, registry)
-    auths = {}
-    if auth_secret != None:
-        auths = {
-            blob_url: {
-                "type": "basic",
-                "login": auth_secret.Username,
-                "password": auth_secret.Secret,
-            },
-        }
-    else:
-        result = rctx.execute([rctx.path(rctx.attr.token_handler), registry, rctx.attr.repository])
-        data = json.decode(result.stdout)
-        token = data.get("token")
-        if token != None:
-            auths = {
-                blob_url: {
-                    "type": "pattern",
-                    "pattern": "Bearer {}".format(token),
-                },
-            }
-
     debug(rctx, "pulling from: ", blob_url)
 
-    algo, sha256digest = rctx.attr.digest.split(":")
+    auth = _get_auth(rctx, registry)
+    auths = {blob_url: auth} if auth else {}
+
+    _algo, sha256digest = rctx.attr.digest.split(":")
     if rctx.attr.extract:
         rctx.download_and_extract(
             url = blob_url,
